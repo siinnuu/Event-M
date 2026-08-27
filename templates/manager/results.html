@@ -1,0 +1,106 @@
+{% extends "layouts/app.html" %}
+{% block title %}Results{% endblock %}
+{% block page_title %}Results{% endblock %}
+
+{% block content %}
+<form method="get" class="filter-bar">
+  <label class="field inline">
+    <span>Event</span>
+    <select name="event" onchange="this.form.submit()">
+      {% for e in events %}
+      <option value="{{ e.id }}" {% if selected_event and selected_event.id == e.id %}selected{% endif %}>{{ e.name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+</form>
+
+{% if selected_event %}
+{% if my_team %}
+<p class="muted">Your team: <strong>{{ my_team }}</strong>. Full rankings below — your team’s rows are highlighted.</p>
+{% endif %}
+
+<section class="section">
+  <h2>Complete per-item results</h2>
+  {% for item in selected_event['items'] %}
+  <article class="info-card mb">
+    <div class="section-head">
+      <h3>{{ item.name }}</h3>
+      <span class="tag">{{ item.category }}</span>
+    </div>
+    <p class="muted small">{{ item.dateTime.replace('T', ' ') }} · {{ item.venue }}</p>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Participant</th>
+            <th>Team</th>
+            <th>Score</th>
+            <th>Medal</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in item_results_map.get(item.id, []) %}
+          <tr {% if my_team and r.team == my_team %}class="row-highlight"{% endif %}>
+            <td>{{ r.rank or '—' }}</td>
+            <td>
+              {% if r.participant %}{{ r.participant.name }}{% else %}—{% endif %}
+              {% if r.participant %}<div class="muted small">{{ r.participant.roll_number or r.participant.email }}</div>{% endif %}
+            </td>
+            <td><strong>{{ r.team }}</strong></td>
+            <td>{{ r.score }}</td>
+            <td>{{ r.medal or '—' }}</td>
+            <td>
+              {% if r.published %}<span class="tag tag-success">Published</span>
+              {% else %}<span class="tag">Draft</span>{% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="empty">No results entered for this item yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </article>
+  {% endfor %}
+</section>
+
+<section class="section">
+  <h2>Overall team ranking</h2>
+  <p class="muted">Aggregate standing of each team (college) across all items in this event.</p>
+  {% if event_result %}
+  <p class="muted small">{% if event_result.published %}Published{% else %}Draft — not visible to participants{% endif %}</p>
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Team</th>
+          <th>Points</th>
+          <th>Note</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for entry in event_result.entries %}
+        <tr {% if my_team and entry.college == my_team %}class="row-highlight"{% endif %}>
+          <td>{{ entry.rank }}</td>
+          <td>
+            <strong>{{ entry.college }}</strong>
+            {% if my_team and entry.college == my_team %}<span class="tag tag-success">Your team</span>{% endif %}
+          </td>
+          <td>{{ entry.points }}</td>
+          <td>{{ entry.note }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="empty">No overall team result for this event.</p>
+  {% endif %}
+</section>
+{% else %}
+<p class="empty">No assigned events.</p>
+{% endif %}
+{% endblock %}

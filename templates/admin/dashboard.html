@@ -1,0 +1,52 @@
+{% extends "layouts/app.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<section class="stats-grid">
+  <article class="stat-card">
+    <span class="stat-label">Total Events</span>
+    <strong class="stat-value">{{ total_events }}</strong>
+  </article>
+  <article class="stat-card">
+    <span class="stat-label">Participants</span>
+    <strong class="stat-value">{{ total_participants }}</strong>
+  </article>
+  <article class="stat-card">
+    <span class="stat-label">Team Managers</span>
+    <strong class="stat-value">{{ total_managers }}</strong>
+  </article>
+  <article class="stat-card">
+    <span class="stat-label">Upcoming Events</span>
+    <strong class="stat-value">{{ upcoming_count }}</strong>
+  </article>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <h2>Upcoming</h2>
+    <a href="{{ url_for('admin.events') }}" class="text-link">Manage events</a>
+  </div>
+  {% if upcoming %}
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr><th>Event</th><th>Date</th><th>Venue</th><th>Items</th></tr>
+      </thead>
+      <tbody>
+        {% for e in upcoming %}
+        <tr>
+          <td>{{ e.name }}</td>
+          <td>{{ e.date }}</td>
+          <td>{{ e.venue }}</td>
+          <td>{{ e['items']|length }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="empty">No upcoming events.</p>
+  {% endif %}
+</section>
+{% endblock %}

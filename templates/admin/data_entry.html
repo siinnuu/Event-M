@@ -1,0 +1,120 @@
+{% extends "layouts/app.html" %}
+{% block title %}Data Entry{% endblock %}
+{% block page_title %}Data Entry{% endblock %}
+
+{% block content %}
+<div class="tabs" data-tabs>
+  <div class="tab-list" role="tablist">
+    <button type="button" class="tab active" data-tab="participant" role="tab">Participant</button>
+    <button type="button" class="tab" data-tab="event" role="tab">Event</button>
+    <button type="button" class="tab" data-tab="item" role="tab">Item</button>
+    <button type="button" class="tab" data-tab="registration" role="tab">Registration</button>
+  </div>
+
+  <div class="tab-panel active" data-panel="participant">
+    <form method="post" class="form form-grid">
+      <input type="hidden" name="entry_type" value="participant" />
+      <label class="field"><span>Name</span><input type="text" name="name" required /></label>
+      <label class="field"><span>Email</span><input type="email" name="email" required /></label>
+      <label class="field"><span>College</span><input type="text" name="college" required /></label>
+      <label class="field"><span>Roll number</span><input type="text" name="roll_number" required /></label>
+      <label class="field"><span>Password</span><input type="text" name="password" placeholder="Default: part123" /></label>
+      <div class="form-actions"><button type="submit" class="btn btn-primary">Add participant</button></div>
+    </form>
+  </div>
+
+  <div class="tab-panel" data-panel="event" hidden>
+    <form method="post" class="form form-grid">
+      <input type="hidden" name="entry_type" value="event" />
+      <label class="field"><span>Name</span><input type="text" name="name" required /></label>
+      <label class="field"><span>Date</span><input type="date" name="date" required /></label>
+      <label class="field"><span>Venue</span><input type="text" name="venue" required /></label>
+      <label class="field full"><span>Description</span><textarea name="description" rows="3"></textarea></label>
+      <div class="form-actions"><button type="submit" class="btn btn-primary">Add event</button></div>
+    </form>
+  </div>
+
+  <div class="tab-panel" data-panel="item" hidden>
+    <form method="post" class="form form-grid">
+      <input type="hidden" name="entry_type" value="item" />
+      <label class="field">
+        <span>Event</span>
+        <select name="eventId" required>
+          <option value="">Select…</option>
+          {% for e in events %}
+          <option value="{{ e.id }}">{{ e.name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label class="field"><span>Name</span><input type="text" name="name" required /></label>
+      <label class="field"><span>Category</span><input type="text" name="category" required /></label>
+      <label class="field"><span>Date / Time</span><input type="datetime-local" name="dateTime" required /></label>
+      <label class="field"><span>Venue</span><input type="text" name="venue" required /></label>
+      <label class="field"><span>Max participants</span><input type="number" name="maxParticipants" value="50" /></label>
+      <label class="field full"><span>Rules</span><textarea name="rules" rows="2"></textarea></label>
+      <div class="form-actions"><button type="submit" class="btn btn-primary">Add item</button></div>
+    </form>
+  </div>
+
+  <div class="tab-panel" data-panel="registration" hidden>
+    <form method="post" class="form" id="bulkRegForm">
+      <input type="hidden" name="entry_type" value="registration" />
+      <label class="field">
+        <span>Participant</span>
+        <select name="participantId" required>
+          <option value="">Select…</option>
+          {% for p in participants %}
+          <option value="{{ p.id }}">{{ p.name }} ({{ p.roll_number }})</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label class="field">
+        <span>Event</span>
+        <select name="eventId" id="bulkEventSelect" required>
+          <option value="">Select…</option>
+          {% for e in events %}
+          <option value="{{ e.id }}">{{ e.name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <fieldset class="field">
+        <legend>Items</legend>
+        <div class="checkbox-grid" id="bulkItemChecks">
+          <p class="muted">Select an event to load items.</p>
+        </div>
+      </fieldset>
+      <button type="submit" class="btn btn-primary">Create registration</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+var eventItems = {{ events | map(attribute='id') | list | tojson }};
+var itemsByEvent = {
+  {% for e in events %}
+  "{{ e.id }}": [
+    {% for i in e['items'] %}
+    {"id": "{{ i.id }}", "name": "{{ i.name }}"}{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]{% if not loop.last %},{% endif %}
+  {% endfor %}
+};
+
+var sel = document.getElementById('bulkEventSelect');
+if (sel) {
+  sel.addEventListener('change', function () {
+    var box = document.getElementById('bulkItemChecks');
+    var items = itemsByEvent[sel.value] || [];
+    if (!items.length) {
+      box.innerHTML = '<p class="muted">No items for this event.</p>';
+      return;
+    }
+    box.innerHTML = items.map(function (i) {
+      return '<label class="checkbox-row"><input type="checkbox" name="itemIds" value="' + i.id + '" /><span>' + i.name + '</span></label>';
+    }).join('');
+  });
+}
+</script>
+{% endblock %}

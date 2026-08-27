@@ -1,0 +1,37 @@
+{% extends "layouts/app.html" %}
+{% block title %}Manager Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<section class="stats-grid cols-2">
+  <article class="stat-card">
+    <span class="stat-label">Assigned Events</span>
+    <strong class="stat-value">{{ total_events }}</strong>
+  </article>
+  <article class="stat-card">
+    <span class="stat-label">Participants (across assigned)</span>
+    <strong class="stat-value">{{ total_participants }}</strong>
+  </article>
+</section>
+
+<section class="section">
+  <h2>Your events</h2>
+  {% if cards %}
+  <div class="card-grid">
+    {% for c in cards %}
+    <article class="info-card">
+      <h3>{{ c.event.name }}</h3>
+      <p class="muted">{{ c.event.date }} · {{ c.event.venue }}</p>
+      <p class="meta-row">
+        <span>{{ c.item_count }} items</span>
+        <span>{{ c.participant_count }} participants</span>
+      </p>
+      <a href="{{ url_for('manager.events') }}" class="text-link">View details</a>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="empty">No events assigned yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

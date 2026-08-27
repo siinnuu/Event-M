@@ -1,0 +1,108 @@
+{% extends "layouts/app.html" %}
+{% block title %}{{ event.name }} · Items{% endblock %}
+{% block page_title %}{{ event.name }} — Items{% endblock %}
+{% block topbar_actions %}
+<a href="{{ url_for('admin.events') }}" class="btn btn-ghost">Back</a>
+<button type="button" class="btn btn-primary" data-modal-open="itemModal" data-mode="create">Add Item</button>
+{% endblock %}
+
+{% block content %}
+<p class="muted">{{ event.description }}</p>
+<p class="meta-row"><span>{{ event.date }}</span><span>{{ event.venue }}</span></p>
+
+<div class="table-wrap">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Date / Time</th>
+        <th>Venue</th>
+        <th>Max</th>
+        <th>Registered</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td>
+          <strong>{{ item.name }}</strong>
+          <div class="muted small">{{ item.rules[:70] }}{% if item.rules|length > 70 %}…{% endif %}</div>
+        </td>
+        <td><span class="tag">{{ item.category }}</span></td>
+        <td>{{ item.dateTime.replace('T', ' ') }}</td>
+        <td>{{ item.venue }}</td>
+        <td>{{ item.maxParticipants }}</td>
+        <td>{{ item.participant_count }}</td>
+        <td class="actions">
+          <button
+            type="button"
+            class="btn btn-ghost btn-sm"
+            data-modal-open="itemModal"
+            data-mode="edit"
+            data-id="{{ item.id }}"
+            data-name="{{ item.name }}"
+            data-category="{{ item.category }}"
+            data-datetime="{{ item.dateTime }}"
+            data-venue="{{ item.venue }}"
+            data-rules="{{ item.rules }}"
+            data-max="{{ item.maxParticipants }}"
+          >Edit</button>
+          <form method="post" class="inline-form" onsubmit="return confirm('Delete this item?');">
+            <input type="hidden" name="action" value="delete" />
+            <input type="hidden" name="id" value="{{ item.id }}" />
+            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" class="empty">No items yet. Add a competition or sub-event.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="modal" id="itemModal" hidden>
+  <div class="modal-backdrop" data-modal-close></div>
+  <div class="modal-panel" role="dialog" aria-modal="true">
+    <header class="modal-head">
+      <h2 id="itemModalTitle">Add Item</h2>
+      <button type="button" class="btn btn-ghost btn-icon" data-modal-close aria-label="Close">&times;</button>
+    </header>
+    <form method="post" class="form">
+      <input type="hidden" name="action" id="itemAction" value="create" />
+      <input type="hidden" name="id" id="itemId" value="" />
+      <label class="field"><span>Name</span><input type="text" name="name" id="itemName" required /></label>
+      <label class="field"><span>Category</span><input type="text" name="category" id="itemCategory" required /></label>
+      <label class="field"><span>Date / Time</span><input type="datetime-local" name="dateTime" id="itemDateTime" required /></label>
+      <label class="field"><span>Venue</span><input type="text" name="venue" id="itemVenue" required /></label>
+      <label class="field"><span>Rules</span><textarea name="rules" id="itemRules" rows="3"></textarea></label>
+      <label class="field"><span>Max participants</span><input type="number" name="maxParticipants" id="itemMax" min="1" value="50" /></label>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-modal-close>Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.querySelectorAll('[data-modal-open="itemModal"]').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var mode = btn.getAttribute('data-mode');
+    document.getElementById('itemAction').value = mode === 'edit' ? 'edit' : 'create';
+    document.getElementById('itemModalTitle').textContent = mode === 'edit' ? 'Edit Item' : 'Add Item';
+    document.getElementById('itemId').value = btn.getAttribute('data-id') || '';
+    document.getElementById('itemName').value = btn.getAttribute('data-name') || '';
+    document.getElementById('itemCategory').value = btn.getAttribute('data-category') || '';
+    document.getElementById('itemDateTime').value = btn.getAttribute('data-datetime') || '';
+    document.getElementById('itemVenue').value = btn.getAttribute('data-venue') || '';
+    document.getElementById('itemRules').value = btn.getAttribute('data-rules') || '';
+    document.getElementById('itemMax').value = btn.getAttribute('data-max') || '50';
+  });
+});
+</script>
+{% endblock %}

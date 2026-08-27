@@ -1,0 +1,30 @@
+{% extends "layouts/app.html" %}
+{% block title %}My Profile{% endblock %}
+{% block page_title %}Profile{% endblock %}
+
+{% block content %}
+<form method="post" class="form form-narrow">
+  <label class="field"><span>Name</span><input type="text" name="name" value="{{ user.name }}" required /></label>
+  <label class="field"><span>Email</span><input type="email" name="email" value="{{ user.email }}" required /></label>
+  <label class="field"><span>College</span><input type="text" name="college" value="{{ user.college or '' }}" required /></label>
+  <label class="field"><span>Roll number</span><input type="text" name="roll_number" value="{{ user.roll_number or '' }}" required /></label>
+  <label class="field"><span>New password</span><input type="password" name="password" placeholder="Leave blank to keep current" /></label>
+  <button type="submit" class="btn btn-primary">Save changes</button>
+</form>
+
+<section class="section">
+  <h2>Registrations</h2>
+  {% if reg_rows %}
+  <ul class="plain-list">
+    {% for row in reg_rows %}
+    <li>
+      <strong>{{ row.event.name }}</strong> —
+      {% for name in row['items'] %}<span class="tag">{{ name }}</span>{% endfor %}
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="empty">No registrations yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

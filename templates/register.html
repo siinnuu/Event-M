@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+{% block body_class %}public-page auth-page{% endblock %}
+
+{% block body %}
+<div class="auth-wrap">
+  <a href="{{ url_for('landing') }}" class="brand-mark auth-brand">Aether</a>
+  <div class="auth-card">
+    <h1 class="auth-title">Create account</h1>
+    <p class="auth-sub">Participant self sign-up for Aether events.</p>
+
+    <form method="post" class="form" id="registerForm" novalidate>
+      <label class="field">
+        <span>Full name</span>
+        <input type="text" name="name" value="{{ name or '' }}" required />
+      </label>
+      <label class="field">
+        <span>Email</span>
+        <input type="email" name="email" value="{{ email or '' }}" required />
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <input type="password" name="password" minlength="6" required />
+      </label>
+      <label class="field">
+        <span>College</span>
+        <input type="text" name="college" value="{{ college or '' }}" required />
+      </label>
+      <label class="field">
+        <span>Roll number</span>
+        <input type="text" name="roll_number" value="{{ roll_number or '' }}" required />
+      </label>
+      <button type="submit" class="btn btn-primary btn-block">Register</button>
+    </form>
+
+    <p class="auth-footer">
+      Already have an account?
+      <a href="{{ url_for('auth.login') }}">Login</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

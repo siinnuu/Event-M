@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Welcome{% endblock %}
+{% block body_class %}public-page landing-page{% endblock %}
+
+{% block body %}
+<div class="landing">
+  <header class="landing-nav">
+    <a href="{{ url_for('landing') }}" class="brand-mark">Aether</a>
+    <div class="landing-nav-actions">
+      <a href="{{ url_for('auth.login') }}" class="btn btn-ghost">Login</a>
+      <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Register</a>
+    </div>
+  </header>
+
+  <section class="landing-hero">
+    <div class="landing-hero-copy">
+      <p class="eyebrow">Campus Fest 2026</p>
+      <h1 class="hero-brand">Aether</h1>
+      <p class="hero-tagline">One place to run competitions, registrations, and results.</p>
+      <p class="hero-desc">
+        Manage multi-item events, register participants across competitions,
+        and publish rankings — from planning through finals.
+      </p>
+      <div class="hero-cta">
+        <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">Login</a>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-outline btn-lg">Register</a>
+      </div>
+    </div>
+    <div class="landing-hero-visual" aria-hidden="true">
+      <div class="hero-glow"></div>
+      <div class="hero-panel">
+        <div class="hero-panel-line"></div>
+        <div class="hero-panel-line short"></div>
+        <div class="hero-panel-grid">
+          <span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}

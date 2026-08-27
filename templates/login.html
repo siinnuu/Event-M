@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block body_class %}public-page auth-page{% endblock %}
+
+{% block body %}
+<div class="auth-wrap">
+  <a href="{{ url_for('landing') }}" class="brand-mark auth-brand">Aether</a>
+  <div class="auth-card">
+    <h1 class="auth-title">Sign in</h1>
+    <p class="auth-sub">Enter your email and password to continue.</p>
+
+    <form method="post" class="form" novalidate>
+      <label class="field">
+        <span>Email / ID</span>
+        <input type="email" name="email" value="{{ email or '' }}" required autocomplete="username" placeholder="you@college.edu" />
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <input type="password" name="password" required autocomplete="current-password" placeholder="••••••••" />
+      </label>
+      <button type="submit" class="btn btn-primary btn-block">Login</button>
+    </form>
+
+    <p class="auth-footer">
+      New participant?
+      <a href="{{ url_for('auth.register') }}">Create an account</a>
+    </p>
+
+    <details class="demo-hints">
+      <summary>Demo accounts</summary>
+      <ul>
+        <li><code>admin@eventhub.edu</code> / admin123</li>
+        <li><code>priya@mit.edu</code> / manager123</li>
+        <li><code>ananya@student.edu</code> / part123</li>
+      </ul>
+    </details>
+  </div>
+</div>
+{% endblock %}

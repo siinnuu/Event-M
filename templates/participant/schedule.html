@@ -1,0 +1,50 @@
+{% extends "layouts/app.html" %}
+{% block title %}Schedule{% endblock %}
+{% block page_title %}Schedule{% endblock %}
+
+{% block content %}
+<form method="get" class="filter-bar">
+  <label class="field">
+    <span>Date</span>
+    <input type="date" name="date" value="{{ date_filter }}" />
+  </label>
+  <label class="field">
+    <span>Category</span>
+    <select name="category">
+      <option value="">All</option>
+      {% for c in categories %}
+      <option value="{{ c }}" {% if category_filter == c %}selected{% endif %}>{{ c }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <button type="submit" class="btn btn-primary">Filter</button>
+  <a href="{{ url_for('participant.schedule') }}" class="btn btn-ghost">Clear</a>
+</form>
+
+{% if schedule_data %}
+<div class="accordion" data-accordion>
+  {% for block in schedule_data %}
+  <div class="accordion-item">
+    <button type="button" class="accordion-trigger" aria-expanded="true">
+      <span><strong>{{ block.event.name }}</strong> <span class="muted small">· {{ block.event.date }}</span></span>
+    </button>
+    <div class="accordion-panel">
+      <ul class="schedule-list">
+        {% for item in block['items']|sort(attribute='dateTime') %}
+        <li>
+          <div class="schedule-time">{{ item.dateTime.replace('T', ' ') }}</div>
+          <div>
+            <strong>{{ item.name }}</strong>
+            <div class="muted">{{ item.venue }} · <span class="tag">{{ item.category }}</span></div>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p class="empty">No schedule items match your filters.</p>
+{% endif %}
+{% endblock %}

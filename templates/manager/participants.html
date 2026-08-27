@@ -1,0 +1,81 @@
+{% extends "layouts/app.html" %}
+{% block title %}Manager Participants{% endblock %}
+{% block page_title %}Participants{% endblock %}
+
+{% block content %}
+<section class="section">
+  <h2>Add Participant</h2>
+  <form method="post" class="form form-grid" id="addParticipantForm">
+    <input type="hidden" name="action" value="register" />
+    <label class="field"><span>Name</span><input type="text" name="name" required /></label>
+    <label class="field"><span>Email</span><input type="email" name="email" required /></label>
+    <label class="field"><span>College</span><input type="text" name="college" required /></label>
+    <label class="field"><span>Roll number</span><input type="text" name="roll_number" required /></label>
+    <label class="field">
+      <span>Event</span>
+      <select name="eventId" id="mgrEventSelect" required>
+        <option value="">Select event…</option>
+        {% for e in events %}
+        <option value="{{ e.id }}">{{ e.name }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <fieldset class="field full">
+      <legend>Items (select one or more)</legend>
+      <div class="checkbox-grid" id="mgrItemChecks">
+        <p class="muted">Pick an event first.</p>
+      </div>
+    </fieldset>
+    <div class="form-actions"><button type="submit" class="btn btn-primary">Register participant</button></div>
+  </form>
+</section>
+
+<section class="section">
+  <h2>Registered participants</h2>
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr><th>Name</th><th>College</th><th>Event</th><th>Items</th></tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          <td>{{ row.participant.name }}<div class="muted small">{{ row.participant.email }}</div></td>
+          <td>{{ row.participant.college }}</td>
+          <td>{{ row.event.name }}</td>
+          <td>{% for name in row['items'] %}<span class="tag">{{ name }}</span>{% endfor %}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="empty">No participants registered yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+var itemsByEvent = {
+  {% for e in events %}
+  "{{ e.id }}": [
+    {% for i in e['items'] %}
+    {"id": "{{ i.id }}", "name": "{{ i.name }}"}{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]{% if not loop.last %},{% endif %}
+  {% endfor %}
+};
+var sel = document.getElementById('mgrEventSelect');
+sel.addEventListener('change', function () {
+  var box = document.getElementById('mgrItemChecks');
+  var items = itemsByEvent[sel.value] || [];
+  if (!items.length) {
+    box.innerHTML = '<p class="muted">No items for this event.</p>';
+    return;
+  }
+  box.innerHTML = items.map(function (i) {
+    return '<label class="checkbox-row"><input type="checkbox" name="itemIds" value="' + i.id + '" /><span>' + i.name + '</span></label>';
+  }).join('');
+});
+</script>
+{% endblock %}

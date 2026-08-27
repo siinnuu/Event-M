@@ -1,0 +1,95 @@
+{% extends "layouts/app.html" %}
+{% block title %}Manage Events{% endblock %}
+{% block page_title %}Manage Events{% endblock %}
+{% block topbar_actions %}
+<button type="button" class="btn btn-primary" data-modal-open="eventModal" data-mode="create">Add Event</button>
+{% endblock %}
+
+{% block content %}
+<div class="table-wrap">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Date</th>
+        <th>Venue</th>
+        <th>Items</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for e in events %}
+      <tr>
+        <td>
+          <a href="{{ url_for('admin.event_items', event_id=e.id) }}" class="text-link">{{ e.name }}</a>
+          <div class="muted small">{{ e.description[:80] }}{% if e.description|length > 80 %}…{% endif %}</div>
+        </td>
+        <td>{{ e.date }}</td>
+        <td>{{ e.venue }}</td>
+        <td>{{ e['items']|length }}</td>
+        <td class="actions">
+          <a href="{{ url_for('admin.event_items', event_id=e.id) }}" class="btn btn-ghost btn-sm">Items</a>
+          <button
+            type="button"
+            class="btn btn-ghost btn-sm"
+            data-modal-open="eventModal"
+            data-mode="edit"
+            data-id="{{ e.id }}"
+            data-name="{{ e.name }}"
+            data-description="{{ e.description }}"
+            data-date="{{ e.date }}"
+            data-venue="{{ e.venue }}"
+          >Edit</button>
+          <form method="post" class="inline-form" onsubmit="return confirm('Delete this event?');">
+            <input type="hidden" name="action" value="delete" />
+            <input type="hidden" name="id" value="{{ e.id }}" />
+            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="empty">No events yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="modal" id="eventModal" hidden>
+  <div class="modal-backdrop" data-modal-close></div>
+  <div class="modal-panel" role="dialog" aria-modal="true">
+    <header class="modal-head">
+      <h2 id="eventModalTitle">Add Event</h2>
+      <button type="button" class="btn btn-ghost btn-icon" data-modal-close aria-label="Close">&times;</button>
+    </header>
+    <form method="post" class="form">
+      <input type="hidden" name="action" id="eventAction" value="create" />
+      <input type="hidden" name="id" id="eventId" value="" />
+      <label class="field"><span>Name</span><input type="text" name="name" id="eventName" required /></label>
+      <label class="field"><span>Description</span><textarea name="description" id="eventDescription" rows="3"></textarea></label>
+      <label class="field"><span>Date</span><input type="date" name="date" id="eventDate" required /></label>
+      <label class="field"><span>Venue</span><input type="text" name="venue" id="eventVenue" required /></label>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-modal-close>Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.querySelectorAll('[data-modal-open="eventModal"]').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var mode = btn.getAttribute('data-mode');
+    document.getElementById('eventAction').value = mode === 'edit' ? 'edit' : 'create';
+    document.getElementById('eventModalTitle').textContent = mode === 'edit' ? 'Edit Event' : 'Add Event';
+    document.getElementById('eventId').value = btn.getAttribute('data-id') || '';
+    document.getElementById('eventName').value = btn.getAttribute('data-name') || '';
+    document.getElementById('eventDescription').value = btn.getAttribute('data-description') || '';
+    document.getElementById('eventDate').value = btn.getAttribute('data-date') || '';
+    document.getElementById('eventVenue').value = btn.getAttribute('data-venue') || '';
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "layouts/app.html" %}
+{% block title %}My Events{% endblock %}
+{% block page_title %}My Events{% endblock %}
+
+{% block content %}
+{% if events %}
+<div class="accordion" data-accordion>
+  {% for e in events %}
+  <div class="accordion-item">
+    <button type="button" class="accordion-trigger" aria-expanded="false">
+      <span>
+        <strong>{{ e.name }}</strong>
+        <span class="muted small"> · {{ e.date }} · {{ e.participant_count }} participants</span>
+      </span>
+      <span class="tag">{{ e['items']|length }} items</span>
+    </button>
+    <div class="accordion-panel" hidden>
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr><th>Item</th><th>Category</th><th>Date / Time</th><th>Venue</th><th>Participants</th></tr>
+          </thead>
+          <tbody>
+            {% for item in e['items'] %}
+            <tr>
+              <td>{{ item.name }}</td>
+              <td><span class="tag">{{ item.category }}</span></td>
+              <td>{{ item.dateTime.replace('T', ' ') }}</td>
+              <td>{{ item.venue }}</td>
+              <td>{{ item.participant_count }} / {{ item.maxParticipants }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p class="empty">No events assigned to you.</p>
+{% endif %}
+{% endblock %}

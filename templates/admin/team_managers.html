@@ -1,0 +1,108 @@
+{% extends "layouts/app.html" %}
+{% block title %}Team Managers{% endblock %}
+{% block page_title %}Team Managers{% endblock %}
+{% block topbar_actions %}
+<button type="button" class="btn btn-primary" data-modal-open="managerModal" data-mode="create">Add Manager</button>
+{% endblock %}
+
+{% block content %}
+<div class="table-wrap">
+  <table class="table">
+    <thead>
+      <tr><th>Name</th><th>Email</th><th>College</th><th>Assigned Events</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for m in managers %}
+      <tr>
+        <td>{{ m.name }}</td>
+        <td>{{ m.email }}</td>
+        <td>{{ m.college }}</td>
+        <td>
+          {% for eid in m.assigned_events or [] %}
+            {% for e in events if e.id == eid %}
+              <span class="tag">{{ e.name }}</span>
+            {% endfor %}
+          {% else %}
+            <span class="muted">None</span>
+          {% endfor %}
+        </td>
+        <td class="actions">
+          <button
+            type="button"
+            class="btn btn-ghost btn-sm"
+            data-modal-open="managerModal"
+            data-mode="edit"
+            data-id="{{ m.id }}"
+            data-name="{{ m.name }}"
+            data-email="{{ m.email }}"
+            data-college="{{ m.college }}"
+            data-assigned="{{ (m.assigned_events or [])|join(',') }}"
+          >Edit</button>
+          <form method="post" class="inline-form" onsubmit="return confirm('Remove this manager?');">
+            <input type="hidden" name="action" value="delete" />
+            <input type="hidden" name="id" value="{{ m.id }}" />
+            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="empty">No team managers.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="modal" id="managerModal" hidden>
+  <div class="modal-backdrop" data-modal-close></div>
+  <div class="modal-panel" role="dialog" aria-modal="true">
+    <header class="modal-head">
+      <h2 id="managerModalTitle">Add Manager</h2>
+      <button type="button" class="btn btn-ghost btn-icon" data-modal-close aria-label="Close">&times;</button>
+    </header>
+    <form method="post" class="form">
+      <input type="hidden" name="action" id="managerAction" value="create" />
+      <input type="hidden" name="id" id="managerId" value="" />
+      <label class="field"><span>Name</span><input type="text" name="name" id="managerName" required /></label>
+      <label class="field"><span>Email</span><input type="email" name="email" id="managerEmail" required /></label>
+      <label class="field"><span>College</span><input type="text" name="college" id="managerCollege" /></label>
+      <label class="field"><span>Password</span><input type="password" name="password" id="managerPassword" placeholder="Leave blank to keep / default manager123" /></label>
+      <fieldset class="field">
+        <legend>Assign events</legend>
+        <div class="checkbox-grid" id="managerEvents">
+          {% for e in events %}
+          <label class="checkbox-row">
+            <input type="checkbox" name="assigned_events" value="{{ e.id }}" data-event-id="{{ e.id }}" />
+            <span>{{ e.name }}</span>
+          </label>
+          {% endfor %}
+        </div>
+      </fieldset>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-modal-close>Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.querySelectorAll('[data-modal-open="managerModal"]').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var mode = btn.getAttribute('data-mode');
+    document.getElementById('managerAction').value = mode === 'edit' ? 'edit' : 'create';
+    document.getElementById('managerModalTitle').textContent = mode === 'edit' ? 'Edit Manager' : 'Add Manager';
+    document.getElementById('managerId').value = btn.getAttribute('data-id') || '';
+    document.getElementById('managerName').value = btn.getAttribute('data-name') || '';
+    document.getElementById('managerEmail').value = btn.getAttribute('data-email') || '';
+    document.getElementById('managerCollege').value = btn.getAttribute('data-college') || '';
+    document.getElementById('managerPassword').value = '';
+    var assigned = (btn.getAttribute('data-assigned') || '').split(',').filter(Boolean);
+    document.querySelectorAll('#managerEvents input[type=checkbox]').forEach(function (cb) {
+      cb.checked = assigned.indexOf(cb.value) !== -1;
+    });
+  });
+});
+</script>
+{% endblock %}

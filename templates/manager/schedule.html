@@ -1,0 +1,32 @@
+{% extends "layouts/app.html" %}
+{% block title %}Schedule{% endblock %}
+{% block page_title %}Schedule{% endblock %}
+
+{% block content %}
+{% if events %}
+<div class="accordion" data-accordion>
+  {% for e in events %}
+  <div class="accordion-item">
+    <button type="button" class="accordion-trigger" aria-expanded="false">
+      <span><strong>{{ e.name }}</strong> <span class="muted small">· {{ e.date }}</span></span>
+    </button>
+    <div class="accordion-panel" hidden>
+      <ul class="schedule-list">
+        {% for item in e['items']|sort(attribute='dateTime') %}
+        <li>
+          <div class="schedule-time">{{ item.dateTime.replace('T', ' ') }}</div>
+          <div>
+            <strong>{{ item.name }}</strong>
+            <div class="muted">{{ item.venue }} · {{ item.category }}</div>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p class="empty">No schedule available.</p>
+{% endif %}
+{% endblock %}

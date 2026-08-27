@@ -1,0 +1,116 @@
+{% extends "layouts/app.html" %}
+{% block title %}My Results{% endblock %}
+{% block page_title %}Results{% endblock %}
+
+{% block content %}
+{% if my_team %}
+<p class="muted">Your team: <strong>{{ my_team }}</strong>. Full published rankings are shown — your row and team are highlighted.</p>
+{% endif %}
+
+<div class="tabs" data-tabs>
+  <div class="tab-list" role="tablist">
+    <button type="button" class="tab active" data-tab="per-item" role="tab">Per Item</button>
+    <button type="button" class="tab" data-tab="overall" role="tab">Overall</button>
+  </div>
+
+  <div class="tab-panel active" data-panel="per-item">
+    {% if per_item %}
+    {% for block in per_item %}
+    <article class="info-card mb">
+      <div class="section-head">
+        <h3>{{ block.item.name }}</h3>
+        <span class="tag">{{ block.item.category }}</span>
+      </div>
+      <p class="muted small">{{ block.event.name }} · {{ block.item.dateTime.replace('T', ' ') }}</p>
+      {% if block.my_result %}
+      <p>You placed <strong>#{{ block.my_result.rank }}</strong>
+        {% if block.my_result.medal %}({{ block.my_result.medal }}){% endif %}
+        with score {{ block.my_result.score }}
+        for team <strong>{{ block.my_result.team }}</strong>.</p>
+      {% endif %}
+      {% if block.results %}
+      <div class="table-wrap mt-sm">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Participant</th>
+              <th>Team</th>
+              <th>Score</th>
+              <th>Medal</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in block.results %}
+            <tr {% if r.is_me %}class="row-highlight"{% endif %}>
+              <td>{{ r.rank or '—' }}</td>
+              <td>
+                {% if r.participant %}{{ r.participant.name }}{% else %}—{% endif %}
+                {% if r.is_me %}<span class="tag tag-success">You</span>{% endif %}
+              </td>
+              <td>
+                <strong>{{ r.team }}</strong>
+                {% if my_team and r.team == my_team and not r.is_me %}<span class="tag">Your team</span>{% endif %}
+              </td>
+              <td>{{ r.score }}</td>
+              <td>{{ r.medal or '—' }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="empty">Results for this item are not published yet.</p>
+      {% endif %}
+    </article>
+    {% endfor %}
+    {% else %}
+    <p class="empty">You have no registered items with results yet.</p>
+    {% endif %}
+  </div>
+
+  <div class="tab-panel" data-panel="overall" hidden>
+    {% if overall %}
+    {% for row in overall %}
+    <article class="info-card mb">
+      <h3>{{ row.event.name }}</h3>
+      {% if row.my_team %}
+      <p>
+        Your team <strong>{{ row.my_team.college }}</strong> —
+        Rank {{ row.my_team.rank }}, {{ row.my_team.points }} pts
+      </p>
+      {% if row.my_team.note %}<p class="muted">{{ row.my_team.note }}</p>{% endif %}
+      {% endif %}
+      <div class="table-wrap mt-sm">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Team</th>
+              <th>Points</th>
+              <th>Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for entry in row.entries %}
+            <tr {% if row.my_team and entry.college == row.my_team.college %}class="row-highlight"{% endif %}>
+              <td>{{ entry.rank }}</td>
+              <td>
+                <strong>{{ entry.college }}</strong>
+                {% if row.my_team and entry.college == row.my_team.college %}<span class="tag tag-success">Your team</span>{% endif %}
+              </td>
+              <td>{{ entry.points }}</td>
+              <td>{{ entry.note }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </article>
+    {% endfor %}
+    {% else %}
+    <p class="empty">No published overall team results yet.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

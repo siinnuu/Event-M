@@ -1,0 +1,47 @@
+{% extends "layouts/app.html" %}
+{% block title %}Home{% endblock %}
+{% block page_title %}Welcome, {{ user.name.split(' ')[0] }}{% endblock %}
+
+{% block content %}
+<section class="quick-links">
+  <a href="{{ url_for('participant.schedule') }}" class="quick-link">Schedule</a>
+  <a href="{{ url_for('participant.results') }}" class="quick-link">Results</a>
+  <a href="{{ url_for('participant.profile') }}" class="quick-link">Profile</a>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <h2>My Registered Items</h2>
+  </div>
+  {% if registered_items %}
+  <div class="card-grid">
+    {% for row in registered_items %}
+    <article class="info-card">
+      <span class="tag">{{ row.item.category }}</span>
+      <h3>{{ row.item.name }}</h3>
+      <p class="muted">{{ row.event.name }}</p>
+      <p class="meta-row">
+        <span>{{ row.item.dateTime.replace('T', ' ') }}</span>
+        <span>{{ row.item.venue }}</span>
+      </p>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="empty">You are not registered for any items yet.</p>
+  {% endif %}
+</section>
+
+<section class="section">
+  <h2>Upcoming events</h2>
+  <div class="card-grid">
+    {% for e in upcoming_events %}
+    <article class="info-card">
+      <h3>{{ e.name }}</h3>
+      <p class="muted">{{ e.description }}</p>
+      <p class="meta-row"><span>{{ e.date }}</span><span>{{ e.venue }}</span></p>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
