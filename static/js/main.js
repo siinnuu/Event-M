@@ -17,10 +17,11 @@
     }, 4000);
   }
 
-  /* Sidebar (mobile) */
+  /* Sidebar toggle (desktop collapse + mobile) */
   var sidebar = document.getElementById("sidebar");
   var toggle = document.getElementById("sidebarToggle");
   var backdrop = document.getElementById("sidebarBackdrop");
+  var layoutMain = document.querySelector(".layout-main");
 
   function closeSidebar() {
     if (!sidebar) return;
@@ -34,12 +35,32 @@
     if (backdrop) backdrop.hidden = false;
   }
 
-  if (toggle && sidebar) {
-    toggle.addEventListener("click", function () {
+  function toggleSidebarCollapse() {
+    if (!sidebar) return;
+
+    // On desktop, toggle collapsed state
+    if (window.innerWidth > 900) {
+      sidebar.classList.toggle("collapsed");
+
+      // Adjust main content margin
+      if (layoutMain) {
+        if (sidebar.classList.contains("collapsed")) {
+          layoutMain.style.marginLeft = "72px";
+        } else {
+          layoutMain.style.marginLeft = "240px";
+        }
+      }
+    } else {
+      // On mobile, toggle open/close
       if (sidebar.classList.contains("open")) closeSidebar();
       else openSidebar();
-    });
+    }
   }
+
+  if (toggle && sidebar) {
+    toggle.addEventListener("click", toggleSidebarCollapse);
+  }
+
   if (backdrop) {
     backdrop.addEventListener("click", closeSidebar);
   }

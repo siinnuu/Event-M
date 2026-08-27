@@ -1,15 +1,154 @@
 /* Dashboard & page-specific layouts */
+.dashboard-hero {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 2.5rem 2rem;
+  background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-soft) 100%);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+}
 
-.section {
-  margin-top: 2rem;
+.dashboard-hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, var(--accent-dim), transparent 70%);
+  filter: blur(40px);
+}
+
+.hero-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 400;
+  color: var(--text);
+  margin: 0 0 0.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-sub {
+  color: var(--text-muted);
+  margin: 0 auto;
+  max-width: 500px;
+  position: relative;
+  z-index: 1;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-soft) 100%);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: border-color var(--transition), transform 180ms ease, box-shadow var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.stat-card:hover::before {
+  opacity: 1;
+}
+
+.stat-icon {
+  font-size: 1.8rem;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-dim);
+  border-radius: 14px;
+  margin-bottom: 0.25rem;
+}
+
+.stat-label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-top: 0.25rem;
+  font-family: var(--font-display);
 }
 
 .section-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 1rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.section-head h2 {
+  text-align: center;
+}
+
+.text-link {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-muted);
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.empty-state p {
+  margin-bottom: 1rem;
+}
+
+.section {
+  margin-top: 2.5rem;
 }
 
 .stats-grid {
@@ -20,35 +159,6 @@
 
 .stats-grid.cols-2 {
   grid-template-columns: repeat(2, 1fr);
-}
-
-.stat-card {
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 1.15rem 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  transition: border-color var(--transition), transform var(--transition);
-}
-
-.stat-card:hover {
-  border-color: var(--border-strong);
-  transform: translateY(-2px);
-}
-
-.stat-label {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.stat-value {
-  font-size: 1.85rem;
-  font-weight: 700;
-  color: var(--text);
 }
 
 .card-grid {
@@ -185,5 +295,69 @@
   .schedule-list li {
     grid-template-columns: 1fr;
     gap: 0.25rem;
+  }
+
+  .hero-title {
+    font-size: 1.8rem;
+  }
+}
+
+/* Center content within sections */
+.section {
+  width: 100%;
+}
+
+/* Forms at readable width */
+.form-narrow,
+.form-grid {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* Filter bar stays readable */
+.filter-bar {
+  max-width: 720px;
+  margin: 0 auto 1.5rem;
+}
+
+/* Cards stay full-width within container */
+.card-grid,
+.table-wrap,
+.info-card {
+  width: 100%;
+}
+
+/* Stats grid stays full-width */
+.stats-grid {
+  width: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .page {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 1000px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 800px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .stats-grid,
+  .stats-grid.cols-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-bar {
+    max-width: 100%;
   }
 }

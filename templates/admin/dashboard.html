@@ -3,20 +3,30 @@
 {% block page_title %}Dashboard{% endblock %}
 
 {% block content %}
+<div class="dashboard-hero">
+  <div class="hero-label">EventHub Command Center</div>
+  <h1 class="hero-title">Welcome back, {{ session.get('name', 'Admin') }}</h1>
+  <p class="hero-sub">Manage events, participants, team managers, and results — all from one place.</p>
+</div>
+
 <section class="stats-grid">
-  <article class="stat-card">
+  <article class="stat-card stat-card-primary">
+    <div class="stat-icon">📅</div>
     <span class="stat-label">Total Events</span>
     <strong class="stat-value">{{ total_events }}</strong>
   </article>
-  <article class="stat-card">
+  <article class="stat-card stat-card-accent">
+    <div class="stat-icon">👥</div>
     <span class="stat-label">Participants</span>
     <strong class="stat-value">{{ total_participants }}</strong>
   </article>
-  <article class="stat-card">
+  <article class="stat-card stat-card-warn">
+    <div class="stat-icon">🎤</div>
     <span class="stat-label">Team Managers</span>
     <strong class="stat-value">{{ total_managers }}</strong>
   </article>
-  <article class="stat-card">
+  <article class="stat-card stat-card-success">
+    <div class="stat-icon">🚀</div>
     <span class="stat-label">Upcoming Events</span>
     <strong class="stat-value">{{ upcoming_count }}</strong>
   </article>
@@ -24,29 +34,34 @@
 
 <section class="section">
   <div class="section-head">
-    <h2>Upcoming</h2>
-    <a href="{{ url_for('admin.events') }}" class="text-link">Manage events</a>
+    <h2>Upcoming Events</h2>
+    <a href="{{ url_for('admin.events') }}" class="text-link">Manage events →</a>
   </div>
   {% if upcoming %}
   <div class="table-wrap">
     <table class="table">
       <thead>
-        <tr><th>Event</th><th>Date</th><th>Venue</th><th>Items</th></tr>
+        <tr><th>Event</th><th>Date</th><th>Venue</th><th>Items</th><th>Status</th></tr>
       </thead>
       <tbody>
         {% for e in upcoming %}
         <tr>
-          <td>{{ e.name }}</td>
+          <td><strong>{{ e.name }}</strong></td>
           <td>{{ e.date }}</td>
           <td>{{ e.venue }}</td>
-          <td>{{ e['items']|length }}</td>
+          <td><span class="tag">{{ e['items']|length }} items</span></td>
+          <td><span class="tag tag-success">Active</span></td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
   {% else %}
-  <p class="empty">No upcoming events.</p>
+  <div class="empty-state">
+    <span class="empty-state-icon">📭</span>
+    <p>No upcoming events.</p>
+    <a href="{{ url_for('admin.events') }}" class="btn btn-primary">Create Event</a>
+  </div>
   {% endif %}
 </section>
 {% endblock %}
